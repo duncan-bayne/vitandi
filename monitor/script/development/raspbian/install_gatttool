@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+# thanks to Klaus Seiler (https://plus.google.com/111094732025881144600)
+mkdir tmp
+pushd tmp
+
+wget https://www.kernel.org/pub/linux/bluetooth/bluez-5.4.tar.xz
+tar xvf bluez-5.4.tar.xz
+
+sudo apt-get install libusb-dev libdbus-1-dev libglib2.0-dev automake libudev-dev libical-dev libreadline-dev
+
+cd bluez-5.4
+./configure --disable-systemd
+make
+sudo make install
+
+sudo cp attrib/gatttool /usr/local/bin
+
+popd
