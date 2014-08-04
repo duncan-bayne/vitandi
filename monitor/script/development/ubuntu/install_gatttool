@@ -6,13 +6,13 @@ set -e
 mkdir tmp
 pushd tmp
 
-wget https://www.kernel.org/pub/linux/bluetooth/bluez-5.14.tar.xz
-tar xvf bluez-5.14.tar.xz
+wget https://www.kernel.org/pub/linux/bluetooth/bluez-5.15.tar.xz
+tar xvf bluez-5.15.tar.xz
 
 sudo apt-get purge -y bluez
 sudo apt-get install -y libusb-dev libdbus-1-dev libglib2.0-dev automake libudev-dev libical-dev libreadline-dev
 
-cd bluez-5.14
+cd bluez-5.15
 ./configure --disable-systemd
 make
 sudo make install
