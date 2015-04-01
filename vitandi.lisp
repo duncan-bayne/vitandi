@@ -5,8 +5,6 @@
 
 (load "lifx-config.lisp")
 
-(defvar tickers)
-
 ;;(setq drakma:*header-stream* nil)
 (setq drakma:*text-content-types* (cons '("application" . "json")
                                         drakma:*text-content-types*))
@@ -50,22 +48,25 @@
           (get-all-lights-status)))
 
 (defun dawn-simulator ()
-        (let ((hour (nth 2 (multiple-value-list (get-decoded-time)))))
-          (if (= hour 6)
-              (set-all-lights-on (* 60 10)))))
+  (let ((hour (nth 2 (multiple-value-list (get-decoded-time)))))
+    (if (= hour 5)
+        (progn
+          (print "dawn")
+          (set-all-lights-on (* 60 10))))))
 
-(defun sunset-simulator ()
-        (let ((hour (nth 2 (multiple-value-list (get-decoded-time)))))
-          (if (= hour 22)
-              (set-all-lights-off (* 60 10)))))
-
-(setf tickers `(,#'dawn-simulator ,#'sunset-simulator))
+(defun dusk-simulator ()
+  (let ((hour (nth 2 (multiple-value-list (get-decoded-time)))))
+    (if (= hour 21)
+        (progn
+          (print "dusk")
+          (set-all-lights-off 60)))))
 
 (defun run-tickers ()
   "Executes each ticker in turn."
-  (mapcar (lambda (ticker) (funcall ticker)) tickers))
+  (dawn-simulator)
+  (dusk-simulator))
 
 (defun main-loop ()
   (loop
-   (run-tickers)
-   (sleep 60)))
+     (run-tickers)
+     (sleep 60)))
