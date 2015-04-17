@@ -1,3 +1,5 @@
+(in-package #:vitandi)
+
 (defvar lifx-token)
 (defvar lifx-password)
 

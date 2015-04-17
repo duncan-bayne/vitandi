@@ -1,9 +1,4 @@
-(require :sb-posix)
-(load (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))
-(ql:quickload '("drakma"
-                "cl-json"))
-
-(load "lifx-config.lisp")
+(in-package #:vitandi)
 
 ;;(setq drakma:*header-stream* nil)
 (setq drakma:*text-content-types* (cons '("application" . "json")
@@ -20,6 +15,7 @@
   "Sets a specific light to power on or off over a specified duration"
   (drakma:http-request (concatenate 'string "https://api.lifx.com/v1beta1/lights/id:" id "/power")
                        :method :put
+                       ;; TODO: there must be a better way of doing this:
                        :content (concatenate 'string "state=" power ";duration=" (write-to-string duration-s))
                        :basic-authorization `(,lifx-token ,lifx-password)))
 
@@ -52,14 +48,14 @@
     (if (= hour 5)
         (progn
           (print "dawn")
-          (set-all-lights-on (* 60 10))))))
+          (set-all-lights-on (* 60 60))))))
 
 (defun dusk-simulator ()
   (let ((hour (nth 2 (multiple-value-list (get-decoded-time)))))
     (if (= hour 21)
         (progn
           (print "dusk")
-          (set-all-lights-off 60)))))
+          (set-all-lights-off (* 60 60))))))
 
 (defun run-tickers ()
   "Executes each ticker in turn."
@@ -70,3 +66,4 @@
   (loop
      (run-tickers)
      (sleep 60)))
+
