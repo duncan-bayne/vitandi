@@ -1,6 +1,6 @@
 (in-package #:vitandi)
 
-(defvar current-scene)
+(defparameter current-scene nil)
 
 (setq drakma:*header-stream* nil)
 (setq drakma:*text-content-types* (cons '("application" . "json")
