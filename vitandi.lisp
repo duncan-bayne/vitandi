@@ -1,8 +1,25 @@
 (in-package #:vitandi)
 
-;;(setq drakma:*header-stream* nil)
+(setq drakma:*header-stream* nil)
 (setq drakma:*text-content-types* (cons '("application" . "json")
                                         drakma:*text-content-types*))
+
+(defun lifx-parameters-from-scene (scene-name duration-s)
+  "Gets a string containing PUT variables from a LIFX scene"
+  (let* ((scene (getf scenes scene-name))
+         (brightness (getf scene :brightness))
+         (hue (getf scene :hue))
+         (kelvin (getf scene :kelvin))
+         (saturation (getf scene :saturation)))
+    ;; TODO: there must be a better way of doing this ...
+    (concatenate 'string
+                 "power_on=true"
+                 ";duration=" (write-to-string duration-s)
+                 ";color=" (concatenate 'string
+                                        "brightness:" (write-to-string brightness)
+                                        " hue:" (write-to-string hue)
+                                        " kelvin:" (write-to-string kelvin)
+                                        " saturation:" (write-to-string saturation)))))
 
 (defun get-all-lights-status ()
   "Gets the status of all LIFX light bulbs."
@@ -11,59 +28,9 @@
                         :method :get
                         :basic-authorization `(,lifx-token ,lifx-password))))
 
-(defun set-light-power (power id duration-s)
-  "Sets a specific light to power on or off over a specified duration"
-  (drakma:http-request (concatenate 'string "https://api.lifx.com/v1beta1/lights/id:" id "/power")
+(defun set-all-lights-to-scene (scene-name duration-s)
+  "Sets all LIFX light bulbs to a particular scene, over a specified duration in seconds"
+  (drakma:http-request "https://api.lifx.com/v1beta1/lights/all/color"
                        :method :put
-                       ;; TODO: there must be a better way of doing this:
-                       :content (concatenate 'string "state=" power ";duration=" (write-to-string duration-s))
+                       :content (lifx-parameters-from-scene scene-name duration-s)
                        :basic-authorization `(,lifx-token ,lifx-password)))
-
-(defun light-on-p (status)
-  (equalp "on"
-          (cdr (assoc :power status))))
-
-(defun light-off-p (status)
-  (equalp "off"
-          (cdr (assoc :power status))))
-
-(defun light-id-from-light-status (status)
-  "Extracts the ID of a light from the status of an individual light."
-  (cdr (assoc :id status)))
-
-(defun set-all-lights-off (duration-s)
-  (mapcar (lambda (status)
-            (if (light-on-p status)
-                (set-light-power "off" (light-id-from-light-status status) duration-s)))
-          (get-all-lights-status)))
-
-(defun set-all-lights-on (duration-s)
-  (mapcar (lambda (status)
-            (if (light-off-p status)
-                (set-light-power "on" (light-id-from-light-status status) duration-s)))
-          (get-all-lights-status)))
-
-(defun dawn-simulator ()
-  (let ((hour (nth 2 (multiple-value-list (get-decoded-time)))))
-    (if (= hour 5)
-        (progn
-          (print "dawn")
-          (set-all-lights-on (* 60 60))))))
-
-(defun dusk-simulator ()
-  (let ((hour (nth 2 (multiple-value-list (get-decoded-time)))))
-    (if (= hour 21)
-        (progn
-          (print "dusk")
-          (set-all-lights-off (* 60 60))))))
-
-(defun run-tickers ()
-  "Executes each ticker in turn."
-  (dawn-simulator)
-  (dusk-simulator))
-
-(defun main-loop ()
-  (loop
-     (run-tickers)
-     (sleep 60)))
-

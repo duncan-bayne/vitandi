@@ -7,5 +7,6 @@
   :serial t
   :components ((:file "package")
                (:file "vitandi")
+               (:file "scenes")
                (:file "lifx-config")))
 
