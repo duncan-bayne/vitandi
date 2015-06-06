@@ -6,6 +6,9 @@
 (setq drakma:*text-content-types* (cons '("application" . "json")
                                         drakma:*text-content-types*))
 
+(defun weekday-p (day-of-week)
+  (< 5 day-of-week))
+
 (defun lifx-parameters-from-scene (scene-name duration-s)
   "Gets a string containing PUT variables from a LIFX scene"
   (let* ((scene (getf scenes scene-name))
@@ -39,11 +42,18 @@
                        :basic-authorization `(,lifx-token ,lifx-password)))
 
 (defun lifx-scene-from-current-time ()
-  (let ((hour (nth 2 (multiple-value-list (get-decoded-time)))))
-    (case hour
-      ((22 23 0 1 2 3 4) :night)
-      ((5 6 7 17 18 19 20 21) :warm-daylight)
-      (otherwise :off))))
+  (multiple-value-bind
+        (second minute hour date month year day-of-week dst-p tz)
+      (get-decoded-time)
+    (if (weekday-p day-of-week)
+        (case hour
+          ((21 23 0 1 2 3 4) :night)
+          ((5 6 7 17 18 19 20) :warm-daylight)
+          (otherwise :off))
+        (case hour
+          ((22 23 0 1 2 3 4 5 6) :night)
+          ((7 8 9 17 18 19 20 21) :warm-daylight)
+          (otherwise :off)))))
 
 (defun main-loop ()
   (loop
