@@ -47,8 +47,8 @@
       (get-decoded-time)
     (if (weekday-p day-of-week)
         (case hour
-          ((21 23 0 1 2 3 4) :night)
-          ((5 6 7 17 18 19 20) :warm-daylight)
+          ((21 23 0 1 2 3) :night)
+          ((4 5 6 7 17 18 19 20) :warm-daylight)
           (otherwise :off))
         (case hour
           ((22 23 0 1 2 3 4 5 6) :night)
