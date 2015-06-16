@@ -7,7 +7,7 @@
                                         drakma:*text-content-types*))
 
 (defun weekday-p (day-of-week)
-  (< 5 day-of-week))
+  (< day-of-week 5))
 
 (defun lifx-parameters-from-scene (scene-name duration-s)
   "Gets a string containing PUT variables from a LIFX scene"
