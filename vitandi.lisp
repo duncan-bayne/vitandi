@@ -56,19 +56,19 @@
       (get-decoded-time)
     (if (weekday-p day-of-week)
         (case hour
-          ((21 23 0 1 2 3) :night)
-          ((4 5 6 7 17 18 19 20) :warm-daylight)
+          ((21 23 0 1 2 3 4) :night)
+          ((5 6 7 17 18 19 20) :warm-daylight)
           (otherwise :off))
         (case hour
-          ((22 23 0 1 2 3 4 5 6) :night)
-          ((7 8 9 17 18 19 20 21) :warm-daylight)
+          ((22 23 0 1 2 3 4 5 6 7) :night)
+          ((8 9 17 18 19 20 21) :warm-daylight)
           (otherwise :off)))))
 
 (defun main-loop ()
   (loop
      (let ((desired-scene (lifx-scene-from-current-time)))
        (if (not (eq current-scene desired-scene))
-           (let ((result (set-all-lights-to-scene desired-scene 3600)))
+           (let ((result (set-all-lights-to-scene desired-scene 900)))
              (if (some #'offline-p result)
                  (send-alert result)
                  (setq current-scene desired-scene)))))
