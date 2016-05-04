@@ -1,4 +1,1 @@
-vitandi
-=======
-
-A smart house co-ordinator.
+This project is now hosted at [GitLab](https://gitlab.com/duncan-bayne/vitandi).
