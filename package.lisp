@@ -1,3 +1,0 @@
-(defpackage #:vitandi
-  (:use #:cl))
-
